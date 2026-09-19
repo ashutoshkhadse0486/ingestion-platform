@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: capstone-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: capstone
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # HEALTHCHECK: Ensures Postgres engine is fully responsive before anything touches it
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d capstone"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  airflow-init:
+    build: .
+    container_name: capstone-airflow-init
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@postgres:5432/capstone
+    # '|| true' to avoid crashing on the second run if the user already exists
+    command: >
+      bash -c "airflow db migrate && airflow users create --username '${AIRFLOW_WWW_USER_USERNAME}' --password '${AIRFLOW_WWW_USER_PASSWORD}' --firstname admin --lastname user --role Admin --email admin@example.com || true"
+    depends_on:
+      postgres:
+        condition: service_healthy 
+
+  airflow-webserver:
+    build: .
+    container_name: capstone-airflow-webserver
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@postgres:5432/capstone
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./data:/opt/data
+      - ./data/beam-jars:/opt/beam-jars
+    command: webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully 
+
+  airflow-scheduler:
+    build: .
+    container_name: capstone-airflow-scheduler
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@postgres:5432/capstone
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./data:/opt/data
+      - ./data/beam-jars:/opt/beam-jars
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:
