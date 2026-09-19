@@ -16,7 +16,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Slf4j
 public class WarehouseRepository {
-    private static final String FETCH_SQL = """ SELECT id, employee_id, first_name, last_name, email, phone_number, hire_date, department, job_title, salary, currency, employment_status, manager_id, is_active, skills, address, emergency_contact, ingestion_timestamp, execution_id, source_creation_time FROM target_warehouse ORDER BY id """;
+    private static final String FETCH_SQL = """ 
+                                            SELECT id, employee_id, first_name, last_name, email, phone_number, hire_date, department, job_title, salary, currency, employment_status, manager_id, is_active, skills, address, emergency_contact, ingestion_timestamp, execution_id, source_creation_time 
+                                            FROM target_warehouse ORDER BY id 
+                                            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
