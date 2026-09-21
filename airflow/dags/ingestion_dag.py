@@ -1,3 +1,5 @@
+"""Airflow DAG that orchestrates the Beam-based ingestion workflow."""
+
 from pathlib import Path
 import json
 import logging
@@ -16,7 +18,7 @@ BEAM_JAR = Path('/opt/data/beam-jars/beam-ingestion-pipeline-bundled.jar')
 logger = logging.getLogger(__name__)
 
 def run_beam_ingestion(**context):
-    """Run the bundled Beam jar with the file supplied by the API."""
+    """Execute the bundled Beam jar for each source file in the current DAG run."""
     dag_run = context['dag_run']
     configuration = dag_run.conf or {}
     execution_id = configuration.get('execution_id')
@@ -46,9 +48,11 @@ def run_beam_ingestion(**context):
     logger.info('Beam task completed: execution_id=%s, duration_seconds=%.2f', execution_id, time.monotonic() - start_time)
 
 def get_configuration(context):
+    """Return the DAG run configuration payload passed by the API."""
     return context['dag_run'].conf or {}
 
 def open_metadata_record(**context):
+    """Create a run record in ingestion_metadata before the processing job starts."""
     configuration = get_configuration(context)
     execution_id = configuration.get('execution_id')
     logger.info('Opening ingestion metadata: execution_id=%s', execution_id)

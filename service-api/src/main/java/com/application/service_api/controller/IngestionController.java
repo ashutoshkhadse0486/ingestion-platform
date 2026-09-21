@@ -20,6 +20,9 @@ public class IngestionController {
 
     private final IngestionService ingestionService;
 
+    /**
+     * Accepts a control file path and starts the ingestion workflow asynchronously.
+     */
     @PostMapping("/trigger")
     public ResponseEntity<IngestionResponse> triggerIngestion(@Valid @RequestBody IngestionRequest request) {
         log.info("Received ingestion trigger request for control file {}", request.getControlFileLocation());

@@ -1,3 +1,5 @@
+"""Split large CSV or JSON datasets into smaller chunks for downstream processing."""
+
 import argparse
 import json
 import logging
@@ -11,6 +13,7 @@ LOGGER = logging.getLogger("unified-file-splitter")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s - %(message)s")
 
 def split_file(input_path: str, output_directory: str, chunk_size: int, file_type: str) -> list[str]:
+    """Chunk a CSV or JSON source file into smaller Spark output partitions."""
     LOGGER.info("Starting file split: input=%s, output=%s, chunk_size=%s, file_type=%s", input_path, output_directory, chunk_size, file_type)
     spark = SparkSession.builder.appName("unified-file-splitter").getOrCreate()
     
@@ -59,6 +62,7 @@ def split_file(input_path: str, output_directory: str, chunk_size: int, file_typ
         spark.stop()
 
 def main() -> None:
+    """CLI entry point for the splitter job."""
     parser = argparse.ArgumentParser(description="Unified CSV and JSON file chunk splitter")
     parser.add_argument("--input", required=True, help="Path to the input CSV or JSON dataset")
     parser.add_argument("--output-directory", required=True, help="Destination directory for chunks")

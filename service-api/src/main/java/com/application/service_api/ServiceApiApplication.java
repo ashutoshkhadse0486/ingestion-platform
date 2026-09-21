@@ -9,6 +9,9 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class ServiceApiApplication {
 
+	/**
+	 * Starts the Spring Boot service API.
+	 */
 	public static void main(String[] args) {
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
 		SpringApplication.run(ServiceApiApplication.class, args);

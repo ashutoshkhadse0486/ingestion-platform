@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 public class IngestionPipeline {
     private static final Logger LOGGER = LoggerFactory.getLogger(IngestionPipeline.class);
 
+    /**
+     * Main entry point for the Beam ingestion pipeline.
+     */
     public static void main(String[] args) {
         IngestionOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(IngestionOptions.class);
         LOGGER.info("Beam ingestion started: executionId={}, fileType={}, filePath={}", options.getExecutionId(), options.getFileType(), options.getFilePath());

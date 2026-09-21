@@ -27,6 +27,9 @@ public class IngestionService {
         this.ingestionProperties = ingestionProperties;
     }
 
+    /**
+     * Validates the request, resolves the control file, and delegates to Airflow.
+     */
     public IngestionResponse triggerIngestion(IngestionRequest request) {
         validateRequest(request);
 
@@ -40,6 +43,9 @@ public class IngestionService {
         return IngestionResponse.builder().executionId(executionId).status("ACCEPTED").timestamp(Instant.now()).summary("Ingestion accepted for Airflow processing").build();
     }
 
+    /**
+     * Splits large files before scheduling the Airflow DAG when the dataset exceeds the configured threshold.
+     */
     private List<String> resolveDataFiles(String dataFileLocation, String fileType, String executionId) {
         try {
             Path localDataFile = resolveLocalPath(dataFileLocation);

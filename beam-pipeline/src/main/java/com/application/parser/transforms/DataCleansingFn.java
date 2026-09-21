@@ -19,8 +19,15 @@ import org.slf4j.LoggerFactory;
 
 public class DataCleansingFn extends DoFn<String, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataCleansingFn.class);
-    
+
+    /**
+     * Output tag for valid records that pass cleansing and validation.
+     */
     public static final TupleTag<String> SUCCESS_TAG = new TupleTag<>() {};
+
+    /**
+     * Output tag for records rejected during validation or normalization.
+     */
     public static final TupleTag<String> ERROR_TAG = new TupleTag<>() {};
 
     private final String executionId;

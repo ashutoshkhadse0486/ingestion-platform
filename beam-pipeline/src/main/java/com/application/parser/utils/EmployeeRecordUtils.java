@@ -14,6 +14,9 @@ public final class EmployeeRecordUtils {
     private EmployeeRecordUtils() {
     }
 
+    /**
+     * Validates that required employee fields are present and within acceptable length/range constraints.
+     */
     public static void validateRecord(Map<String, Object> record) {
         requireStringLength(record, "employee_id", 7, 7);
         requireStringLength(record, "manager_id", 7, 7);

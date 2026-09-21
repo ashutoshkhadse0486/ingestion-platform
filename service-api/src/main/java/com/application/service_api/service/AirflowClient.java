@@ -20,6 +20,9 @@ public class AirflowClient {
         this.dagId = dagId;
     }
 
+    /**
+     * Triggers the configured Airflow DAG for a specific ingestion execution.
+     */
     public void trigger(String executionId, List<String> dataFileLocations, String dataFileType, long expectedRecordCount) {
 
         Map<String, Object> configuration = Map.of("execution_id", executionId, "data_file_locations", dataFileLocations, "file_type", dataFileType, "expected_record_count", expectedRecordCount);
